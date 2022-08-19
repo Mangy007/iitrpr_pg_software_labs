@@ -1,0 +1,5 @@
+#ignore all directories
+*/__pycache__/
+assignment1/dataset/
+assignment1/data_block/
+assignment1/sorted_run/

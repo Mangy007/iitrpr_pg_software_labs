@@ -1,0 +1,16 @@
+1. create random data file for 50K records
+
+2. divide the file into N blocks containing B=K records (total blocks = total records/ block size)
+
+3. take M blocks and pass it to memory (memory size = M)
+
+4. sort all the records across M blocks in memory and the create a sorted run i.e. M text file/blocks containing M*BlockSize records
+
+5. loop until #runs > 1
+
+6. Case I: when M > #runs
+			take one block from each run to memory and apply min heap to find the minimum and sort it accordingly. On finding the minimum take out the minimum and then shift pointer to next record from where the minimum record was found
+			take out the sorted block and create a new intermediate sorted run i.e. a new file.
+
+	Case II: when M <= #runs
+			
