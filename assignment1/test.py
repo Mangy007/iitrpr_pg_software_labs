@@ -1,7 +1,7 @@
 import os
 
 
-path = "/home/mangy007/MTech/pg_software_lab/assignment1"
+path = os.getcwd()
 
 list1 = open(path+"/dataset/data.txt").readlines()
 list2 = open(path+"/sorted_run/sorted_data.txt").readlines()
