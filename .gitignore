@@ -3,3 +3,6 @@
 assignment1/dataset/
 assignment1/data_block/
 assignment1/sorted_run/
+
+#ignore all files
+assignment2/dataset.txt

@@ -1,6 +1,6 @@
 # How to run the code?
 
-1. Run external_sorting.py file. It asks for Block Size and Memory size as space separated inputs.
+1. Run external_sorting.py file. It asks for Number_of_records,  Block_Size and Memory_size as space separated inputs.
 
 # Files information
 
