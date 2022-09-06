@@ -1,5 +1,8 @@
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -18,7 +21,7 @@ public class ExtendibleHash {
             File file = new File(cwd+"/dataset.txt");
             Scanner fileReader = new Scanner(file);
 
-            Bucket.setBucketSize(2);
+            Bucket.setBucketSize(3);
             Utility.setHashLength(4);
             int globalDepth = 0;
             while(fileReader.hasNextLine()) {
@@ -66,14 +69,29 @@ public class ExtendibleHash {
                         // perform bucket expansion as local depth < global depth
                         currBucket = initialBucket;
                         currBucket.localDepth++;
-                        for (String currKey : bucketAddressTable.keySet()) {
+                        // create bucket and share bucket with same key prefix based on local depth
+
+                        String prevKeyPrefix = "";
+                        String lastMatchedKey = "";
+                        List<String> bucketAddressTableKeyset = new ArrayList<String>(bucketAddressTable.keySet());
+                        Collections.sort(bucketAddressTableKeyset);
+                        for (String currKey : bucketAddressTableKeyset) {
                             if(currBucket == secondaryMemory.getBucket(bucketAddressTable.get(currKey))) {
-                                Bucket newBucket = new Bucket();
-                                newBucket.localDepth = currBucket.localDepth;
-                                secondaryMemory.addBucket(newBucket);
-                                bucketAddressTable.put(currKey, secondaryMemory.lastFilledBuckedIndex);
+                                String currKeyPrefix = currKey.substring(0, currBucket.localDepth);
+                                if(!currKeyPrefix.equals(prevKeyPrefix)) {
+                                    prevKeyPrefix = currKeyPrefix;
+                                    lastMatchedKey = currKey;
+                                    Bucket newBucket = new Bucket();
+                                    newBucket.localDepth = currBucket.localDepth;
+                                    secondaryMemory.addBucket(newBucket);
+                                    bucketAddressTable.put(currKey, secondaryMemory.lastFilledBuckedIndex);
+                                }
+                                else {
+                                    bucketAddressTable.put(currKey, bucketAddressTable.get(lastMatchedKey));
+                                }
                             }
                         }
+
                         // perform chaining if bucket is full
                         while(currBucket!=null) {
                             for (Record currRecord : currBucket.records) {

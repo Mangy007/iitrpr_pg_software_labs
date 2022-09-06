@@ -95,14 +95,36 @@ public class Utility {
             // perform bucket expansion as local depth < global depth
             currBucket = initialBucket;
             currBucket.localDepth++;
-            for (String currKey : tempBucketAddressTable.keySet()) {
+
+            String prevKeyPrefix = "";
+            String lastMatchedKey = "";
+            List<String> bucketAddressTableKeyset = new ArrayList<String>(tempBucketAddressTable.keySet());
+            Collections.sort(bucketAddressTableKeyset);
+            for (String currKey : bucketAddressTableKeyset) {
                 if(currBucket == secondaryMemory.getBucket(tempBucketAddressTable.get(currKey))) {
-                    Bucket newBucket = new Bucket();
-                    newBucket.localDepth = currBucket.localDepth;
-                    secondaryMemory.addBucket(newBucket);
-                    tempBucketAddressTable.put(currKey, secondaryMemory.lastFilledBuckedIndex);
+                    if(currKey.equals("")) {
+                        Bucket newBucket = new Bucket();
+                        newBucket.localDepth = currBucket.localDepth;
+                        secondaryMemory.addBucket(newBucket);
+                        tempBucketAddressTable.put(currKey, secondaryMemory.lastFilledBuckedIndex);
+                    }
+                    else {
+                        String currKeyPrefix = currKey.substring(0, currBucket.localDepth);
+                        if(!currKeyPrefix.equals(prevKeyPrefix)) {
+                            prevKeyPrefix = currKeyPrefix;
+                            lastMatchedKey = currKey;
+                            Bucket newBucket = new Bucket();
+                            newBucket.localDepth = currBucket.localDepth;
+                            secondaryMemory.addBucket(newBucket);
+                            tempBucketAddressTable.put(currKey, secondaryMemory.lastFilledBuckedIndex);
+                        }
+                        else {
+                            tempBucketAddressTable.put(currKey, tempBucketAddressTable.get(lastMatchedKey));
+                        }
+                    }
                 }
             }
+            
             // perform chaining if bucket is full
             while(currBucket!=null) {
                 for (Record currRecord : currBucket.records) {
