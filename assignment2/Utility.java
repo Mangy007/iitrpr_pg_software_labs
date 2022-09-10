@@ -1,4 +1,3 @@
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,14 +11,20 @@ public class Utility {
 
     static int hashLength = 0;      // hashlength/number_of_bits is set to 0
 
+    public static void createFile(String input, String filename) throws IOException {
+
+        String cwd = System.getProperty("user.dir");
+        FileOutputStream fileWrite = null;
+        fileWrite = new FileOutputStream(cwd+"/"+filename+".txt");
+        fileWrite.write(input.getBytes());
+        fileWrite.close();
+    }
+
     public static void generateData(int numberOfRecords) throws IOException {
         
         char[] charArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-        String cwd = System.getProperty("user.dir");
-        FileOutputStream file = null;
 
         Random rand = new Random();
-        // ArrayList<String> records = new ArrayList<>();
         String records = "";
     
         for (int i = 0; i < numberOfRecords; i++) {
@@ -29,12 +34,7 @@ public class Utility {
             int categoryOfItem = rand.nextInt(1500)+1;
             records += transactionId+","+transactionSaleAmount+","+customerName+","+categoryOfItem+"\n";
 
-            // if (i < numberOfRecords-1) record += "\n";
-
-            // records.add(record);
         }
-
-        // Collections.shuffle(records);
 
         createFile(records, "dataset");
     }
@@ -53,22 +53,10 @@ public class Utility {
 
     public static Map<String, Integer> performRehashingAndTableExpansion(Map<String, Integer> bucketAddressTable, Record newRecord, int globalDepth) {
     
-        Map<String, Integer> tempBucketAddressTable = new HashMap<>();
         int tableSize = (int) Math.pow(2, globalDepth);
+        Map<String, Integer> tempBucketAddressTable = updateBucketAddressTable(bucketAddressTable, globalDepth, tableSize);
 
-        // create new bucket address table based on global depth
-        for (int i = 0; i < tableSize; i++) {
-            String format = "%"+globalDepth+"s";
-            String key = String.format(format, Integer.toBinaryString(i)).replace(" ", "0");
-            int bucketIndexInSecondaryMemory;
-            if(globalDepth==1)
-                bucketIndexInSecondaryMemory = bucketAddressTable.get("");
-            else
-                bucketIndexInSecondaryMemory = bucketAddressTable.get(key.substring(0, globalDepth-1));
-
-            tempBucketAddressTable.put(key, bucketIndexInSecondaryMemory);
-        }
-
+    
         String hashValue = Utility.getHashValue(newRecord);
         String hashPrefix = hashValue.substring(0, globalDepth);
         Bucket initialBucket = SimulatedSecondaryMemory.getBucket(tempBucketAddressTable.get(hashPrefix));
@@ -87,78 +75,107 @@ public class Utility {
             currBucket = initialBucket;
             currBucket.localDepth++;
 
-            String prevKeyPrefix = "";
-            String lastMatchedKey = "";
-            List<String> bucketAddressTableKeyset = new ArrayList<String>(tempBucketAddressTable.keySet());
-            Collections.sort(bucketAddressTableKeyset);
-            for (String currKey : bucketAddressTableKeyset) {
-                if(currBucket == SimulatedSecondaryMemory.getBucket(tempBucketAddressTable.get(currKey))) {
-                    if(currKey.equals("")) {
-                        Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
-                        newBucket.localDepth = currBucket.localDepth;
-                        tempBucketAddressTable.put(currKey, SimulatedSecondaryMemory.lastFilledBuckedIndex);
-                    }
-                    else {
-                        String currKeyPrefix = currKey.substring(0, currBucket.localDepth);
-                        if(!currKeyPrefix.equals(prevKeyPrefix)) {
-                            prevKeyPrefix = currKeyPrefix;
-                            lastMatchedKey = currKey;
-                            Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
-                            newBucket.localDepth = currBucket.localDepth;
-                            tempBucketAddressTable.put(currKey, SimulatedSecondaryMemory.lastFilledBuckedIndex);
-                        }
-                        else {
-                            tempBucketAddressTable.put(currKey, tempBucketAddressTable.get(lastMatchedKey));
-                        }
-                    }
-                }
-            }
+            performBucketExpansion(tempBucketAddressTable, currBucket);
             
-            // perform chaining if bucket is full
-            while(currBucket!=null) {
-                for (Record currRecord : currBucket.records) {
-                    String prevRecordHashValue = Utility.getHashValue(currRecord);
-                    String prevRecordHashPrefix = prevRecordHashValue.substring(0, globalDepth);
-                    Bucket bucket = SimulatedSecondaryMemory.getBucket(tempBucketAddressTable.get(prevRecordHashPrefix));
+            addRecordToBucket(newRecord, globalDepth, tempBucketAddressTable, hashPrefix, currBucket);
+        }
+
+
+        return tempBucketAddressTable;
+    }
+
+    public static void addRecordToBucket(Record newRecord, int globalDepth, Map<String, Integer> tempBucketAddressTable,
+            String hashPrefix, Bucket currBucket) {
+        Bucket initialBucket;
+        // perform chaining if bucket is full
+        while(currBucket!=null) {
+            for (Record currRecord : currBucket.records) {
+                String prevRecordHashValue = Utility.getHashValue(currRecord);
+                String prevRecordHashPrefix = prevRecordHashValue.substring(0, globalDepth);
+                Bucket bucket = SimulatedSecondaryMemory.getBucket(tempBucketAddressTable.get(prevRecordHashPrefix));
+                if(bucket.isBucketFull()) {
+                    while(bucket!=null) {
+                        if(bucket.nextBucket==null) break;
+                        bucket = bucket.nextBucket;
+                    }
                     if(bucket.isBucketFull()) {
-                        while(bucket!=null) {
-                            if(bucket.nextBucket==null) break;
-                            bucket = bucket.nextBucket;
-                        }
-                        if(bucket.isBucketFull()) {
-                            Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
-                            newBucket.addRecord(currRecord);
-                            newBucket.localDepth = bucket.localDepth;
-                            bucket.nextBucket = newBucket;
-                        }
-                        else {
-                            bucket.addRecord(currRecord);
-                        }
+                        Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
+                        newBucket.addRecord(currRecord);
+                        newBucket.localDepth = bucket.localDepth;
+                        bucket.nextBucket = newBucket;
                     }
                     else {
                         bucket.addRecord(currRecord);
                     }
                 }
-                SimulatedSecondaryMemory.removeBucket(currBucket);
-                currBucket = currBucket.nextBucket;
+                else {
+                    bucket.addRecord(currRecord);
+                }
             }
-            // add new record
-            initialBucket = SimulatedSecondaryMemory.getBucket(tempBucketAddressTable.get(hashPrefix));
-            while(initialBucket!=null) {
-                if(initialBucket.nextBucket==null) break;
-                initialBucket = initialBucket.nextBucket;
-            }
-            if(initialBucket.isBucketFull()) {
-                Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
-                newBucket.addRecord(newRecord);
-                newBucket.localDepth = initialBucket.localDepth;
-                initialBucket.nextBucket = newBucket;
-            }
-            else {
-                initialBucket.addRecord(newRecord);
+            SimulatedSecondaryMemory.removeBucket(currBucket);
+            currBucket = currBucket.nextBucket;
+        }
+        // add new record
+        initialBucket = SimulatedSecondaryMemory.getBucket(tempBucketAddressTable.get(hashPrefix));
+        while(initialBucket!=null) {
+            if(initialBucket.nextBucket==null) break;
+            initialBucket = initialBucket.nextBucket;
+        }
+        if(initialBucket.isBucketFull()) {
+            Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
+            newBucket.addRecord(newRecord);
+            newBucket.localDepth = initialBucket.localDepth;
+            initialBucket.nextBucket = newBucket;
+        }
+        else {
+            initialBucket.addRecord(newRecord);
+        }
+    }
+
+    public static void performBucketExpansion(Map<String, Integer> tempBucketAddressTable, Bucket currBucket) {
+        String prevKeyPrefix = "";
+        String lastMatchedKey = "";
+        List<String> bucketAddressTableKeyset = new ArrayList<String>(tempBucketAddressTable.keySet());
+        Collections.sort(bucketAddressTableKeyset);
+        for (String currKey : bucketAddressTableKeyset) {
+            if(currBucket == SimulatedSecondaryMemory.getBucket(tempBucketAddressTable.get(currKey))) {
+                if(currKey.equals("")) {
+                    Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
+                    newBucket.localDepth = currBucket.localDepth;
+                    tempBucketAddressTable.put(currKey, SimulatedSecondaryMemory.lastFilledBuckedIndex);
+                }
+                else {
+                    String currKeyPrefix = currKey.substring(0, currBucket.localDepth);
+                    if(!currKeyPrefix.equals(prevKeyPrefix)) {
+                        prevKeyPrefix = currKeyPrefix;
+                        lastMatchedKey = currKey;
+                        Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
+                        newBucket.localDepth = currBucket.localDepth;
+                        tempBucketAddressTable.put(currKey, SimulatedSecondaryMemory.lastFilledBuckedIndex);
+                    }
+                    else {
+                        tempBucketAddressTable.put(currKey, tempBucketAddressTable.get(lastMatchedKey));
+                    }
+                }
             }
         }
+    }
 
+    // create new bucket address table based on global depth
+    private static Map<String, Integer> updateBucketAddressTable(Map<String, Integer> bucketAddressTable, int globalDepth, int tableSize) {
+
+        Map<String, Integer> tempBucketAddressTable = new HashMap<>();
+        for (int i = 0; i < tableSize; i++) {
+            String format = "%"+globalDepth+"s";
+            String key = String.format(format, Integer.toBinaryString(i)).replace(" ", "0");
+            int bucketIndexInSecondaryMemory;
+            if(globalDepth==1)
+                bucketIndexInSecondaryMemory = bucketAddressTable.get("");
+            else
+                bucketIndexInSecondaryMemory = bucketAddressTable.get(key.substring(0, globalDepth-1));
+
+            tempBucketAddressTable.put(key, bucketIndexInSecondaryMemory);
+        }
 
         return tempBucketAddressTable;
     }
@@ -193,15 +210,6 @@ public class Utility {
         }
 
         return output;
-    }
-
-    public static void createFile(String input, String filename) throws IOException {
-
-        String cwd = System.getProperty("user.dir");
-        FileOutputStream fileWrite = null;
-        fileWrite = new FileOutputStream(cwd+"/"+filename+".txt");
-        fileWrite.write(input.getBytes());
-        fileWrite.close();
     }
     
 }

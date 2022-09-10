@@ -1,8 +1,5 @@
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -11,13 +8,13 @@ public class ExtendibleHash {
     static String cwd = System.getProperty("user.dir");
     static Map<String, Integer> bucketAddressTable = new HashMap<String, Integer>() {};
     static final int numberOfRecords = 30;
-    static final int bucketSize = 201;
+    static final int bucketSize = 200;
     static final int hashLength = 16;
     
     public static void main(String args[]) {
         
         try {
-            // Utility.generateData(numberOfRecords);
+            Utility.generateData(numberOfRecords);
             File file = new File(cwd+"/dataset.txt");
             Scanner fileReader = new Scanner(file);
             String outpuString = "";
@@ -30,16 +27,16 @@ public class ExtendibleHash {
                 Record record = new Record(strRecord);
                 String hashValue = Utility.getHashValue(record);
                 String hashPrefix = hashValue.substring(0, globalDepth); 
-                String key = hashValue.substring(0, globalDepth); // redundant variable, can be replaced with hashPrefix
+                // String key = hashValue.substring(0, globalDepth); // redundant variable, can be replaced with hashPrefix
                 if(globalDepth == 0) {
                     if(bucketAddressTable.isEmpty()) {
                         //create a bucket and insert a record to it
                         Bucket bucket = SimulatedSecondaryMemory.getNewBucket();
                         bucket.addRecord(record);
-                        bucketAddressTable.put(key, SimulatedSecondaryMemory.lastFilledBuckedIndex);
+                        bucketAddressTable.put(hashPrefix, SimulatedSecondaryMemory.lastFilledBuckedIndex);
                     }
                     else {
-                        int secondaryMemoryIndex = bucketAddressTable.get(key);
+                        int secondaryMemoryIndex = bucketAddressTable.get(hashPrefix);
                         Bucket initialBucket = SimulatedSecondaryMemory.getBucket(secondaryMemoryIndex);
                         if(!initialBucket.isBucketFull()) {
                             // insert record as bucket has some space left for new records
@@ -53,7 +50,7 @@ public class ExtendibleHash {
                     }
                 }
                 else {
-                    int secondaryMemoryIndex = bucketAddressTable.get(key);
+                    int secondaryMemoryIndex = bucketAddressTable.get(hashPrefix);
                     Bucket initialBucket = SimulatedSecondaryMemory.getBucket(secondaryMemoryIndex);
 
                     Bucket currBucket = initialBucket;
@@ -71,69 +68,10 @@ public class ExtendibleHash {
                         currBucket.localDepth++;
                         // create bucket and share bucket with same key prefix based on local depth
 
-                        String prevKeyPrefix = "";
-                        String lastMatchedKey = "";
-                        List<String> bucketAddressTableKeyset = new ArrayList<String>(bucketAddressTable.keySet());
-                        Collections.sort(bucketAddressTableKeyset);
-                        for (String currKey : bucketAddressTableKeyset) {
-                            if(currBucket == SimulatedSecondaryMemory.getBucket(bucketAddressTable.get(currKey))) {
-                                String currKeyPrefix = currKey.substring(0, currBucket.localDepth);
-                                if(!currKeyPrefix.equals(prevKeyPrefix)) {
-                                    prevKeyPrefix = currKeyPrefix;
-                                    lastMatchedKey = currKey;
-                                    Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
-                                    newBucket.localDepth = currBucket.localDepth;
-                                    bucketAddressTable.put(currKey, SimulatedSecondaryMemory.lastFilledBuckedIndex);
-                                }
-                                else {
-                                    bucketAddressTable.put(currKey, bucketAddressTable.get(lastMatchedKey));
-                                }
-                            }
-                        }
+                        Utility.performBucketExpansion(bucketAddressTable, currBucket);
 
-                        // perform chaining if bucket is full
-                        while(currBucket!=null) {
-                            for (Record currRecord : currBucket.records) {
-                                String prevRecordHashValue = Utility.getHashValue(currRecord);
-                                String prevRecordHashPrefix = prevRecordHashValue.substring(0, globalDepth);
-                                Bucket bucket = SimulatedSecondaryMemory.getBucket(bucketAddressTable.get(prevRecordHashPrefix));
-                                if(bucket.isBucketFull()) {
-                                    while(bucket!=null) {
-                                        if(bucket.nextBucket==null) break;
-                                        bucket = bucket.nextBucket;
-                                    }
-                                    if(bucket.isBucketFull()) {
-                                        Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
-                                        newBucket.addRecord(currRecord);
-                                        newBucket.localDepth = bucket.localDepth;
-                                        bucket.nextBucket = newBucket;
-                                    }
-                                    else {
-                                        bucket.addRecord(currRecord);
-                                    }
-                                }
-                                else {
-                                    bucket.addRecord(currRecord);
-                                }
-                            }
-                            SimulatedSecondaryMemory.removeBucket(currBucket);
-                            currBucket = currBucket.nextBucket;
-                        }
-                        // add new record
-                        initialBucket = SimulatedSecondaryMemory.getBucket(bucketAddressTable.get(hashPrefix));
-                        while(initialBucket!=null) {
-                            if(initialBucket.nextBucket==null) break;
-                            initialBucket = initialBucket.nextBucket;
-                        }
-                        if(initialBucket.isBucketFull()) {
-                            Bucket newBucket = SimulatedSecondaryMemory.getNewBucket();
-                            newBucket.addRecord(record);
-                            newBucket.localDepth = initialBucket.localDepth;
-                            initialBucket.nextBucket = newBucket;
-                        }
-                        else {
-                            initialBucket.addRecord(record);
-                        }
+                        Utility.addRecordToBucket(record, globalDepth, bucketAddressTable, hashPrefix, currBucket);
+
                     }
                     else if(initialBucket.localDepth == globalDepth) {
                         // perform table expansion and rehashing if bucket is full
