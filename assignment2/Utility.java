@@ -23,7 +23,7 @@ public class Utility {
         String records = "";
     
         for (int i = 0; i < numberOfRecords; i++) {
-            int transactionId = (i+1)%3;
+            int transactionId = (i*2011);
             int transactionSaleAmount = rand.nextInt(numberOfRecords)+1;
             String customerName = ""+charArray[rand.nextInt(26)]+charArray[rand.nextInt(26)]+charArray[rand.nextInt(26)];
             int categoryOfItem = rand.nextInt(1500)+1;

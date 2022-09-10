@@ -10,8 +10,8 @@ public class ExtendibleHash {
 
     static String cwd = System.getProperty("user.dir");
     static Map<String, Integer> bucketAddressTable = new HashMap<String, Integer>() {};
-    static final int numberOfRecords = 20;
-    static final int bucketSize = 5;
+    static final int numberOfRecords = 30;
+    static final int bucketSize = 201;
     static final int hashLength = 16;
     
     public static void main(String args[]) {
@@ -143,8 +143,8 @@ public class ExtendibleHash {
 
                     }
                 }
-                outpuString += Utility.printHashTable(bucketAddressTable, globalDepth);
-                outpuString += "\n######################################################\n";
+                // outpuString += Utility.printHashTable(bucketAddressTable, globalDepth);
+                // outpuString += "\n######################################################\n";
             }
             fileReader.close();
 
