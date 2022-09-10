@@ -5,6 +5,7 @@ public class Bucket {
     int numberOfEmptySpaces = 0;
     Record[] records = null;
     Bucket nextBucket = null;
+    int bucketIndexInSecondaryMemory = -1;
 
     int recordIndex = 0;
     
@@ -25,15 +26,15 @@ public class Bucket {
         bucketSize = size;
     }
 
-    public void addRecord(String record) {
+    // public void addRecord(String record) {
         
-        if(this.recordIndex >= bucketSize) {
-            // System.err.println("Bucket full\n");
-            return;
-        }
-        records[this.recordIndex++] = new Record(record);
-        this.numberOfEmptySpaces--;
-    }
+    //     if(this.recordIndex >= bucketSize) {
+    //         // System.err.println("Bucket full\n");
+    //         return;
+    //     }
+    //     records[this.recordIndex++] = new Record(record);
+    //     this.numberOfEmptySpaces--;
+    // }
 
     public void addRecord(Record record) {
         
@@ -46,10 +47,10 @@ public class Bucket {
         this.numberOfEmptySpaces--;
     }
 
-    public int size() {
+    // public int size() {
         
-        return recordIndex;
-    }
+    //     return recordIndex;
+    // }
 
     public boolean isBucketFull() {
         
@@ -62,6 +63,19 @@ public class Bucket {
         if(this.numberOfEmptySpaces > 0) return true;
         return false;
     }
+
+    public String getChainedIndexesInSecondaryMemory() {
+
+        String result = ""+this.bucketIndexInSecondaryMemory;
+        Bucket tempBucket = this.nextBucket;
+
+        while(tempBucket != null) {
+            result += ","+tempBucket.bucketIndexInSecondaryMemory;
+            tempBucket = tempBucket.nextBucket;
+        }
+
+        return result;
+    }
     
     @Override
     public String toString() {
@@ -70,7 +84,7 @@ public class Bucket {
 
         for (Record record : records) {
             if(record != null)
-                result += record+"\n";
+                result += "\t"+record+"\n";
         }
         
         Bucket tempBucket = this.nextBucket;
@@ -78,11 +92,12 @@ public class Bucket {
             result += "\n";
             for (Record record : tempBucket.records) {
                 if(record != null)
-                    result += record+"\n";
+                    result += "\t"+record+"\n";
             }
             tempBucket = tempBucket.nextBucket;
         }
 
         return result;
     }
+
 }

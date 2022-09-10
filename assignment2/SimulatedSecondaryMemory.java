@@ -1,20 +1,39 @@
 public class SimulatedSecondaryMemory {
     
-    Bucket[] simulatedSecondaryMemory = new Bucket[100000];
-    int lastFilledBuckedIndex = -1;
+    static Bucket[] simulatedSecondaryMemory = new Bucket[100000];
+    static int lastFilledBuckedIndex = -1;
 
-    public void addBucket(Bucket bucket) {
-        
-        this.simulatedSecondaryMemory[++this.lastFilledBuckedIndex] = bucket;
+    static {
+
+        for (int i = 0; i < simulatedSecondaryMemory.length; i++) {
+            simulatedSecondaryMemory[i] = new Bucket();
+        }
     }
 
-    public Bucket getBucket(int index) {
-        
-        return this.simulatedSecondaryMemory[index];
+    public static Bucket getNewBucket() {
+        lastFilledBuckedIndex += 1;
+        simulatedSecondaryMemory[lastFilledBuckedIndex].bucketIndexInSecondaryMemory = lastFilledBuckedIndex;
+        return simulatedSecondaryMemory[lastFilledBuckedIndex];
     }
 
-    public Bucket getLastInsertedBucket() {
+    // public static void addBucket(Bucket bucket) {
         
-        return this.simulatedSecondaryMemory[this.lastFilledBuckedIndex];
+    //     bucket.bucketIndexInSecondaryMemory = lastFilledBuckedIndex+1;
+    //     simulatedSecondaryMemory[++lastFilledBuckedIndex] = bucket;
+    // }
+
+    public static Bucket getBucket(int index) {
+        
+        return simulatedSecondaryMemory[index];
     }
+
+    public static void removeBucket(Bucket bucket) {
+        
+        simulatedSecondaryMemory[bucket.bucketIndexInSecondaryMemory] = null;
+    }
+
+    // public static Bucket getLastInsertedBucket() {
+        
+    //     return simulatedSecondaryMemory[lastFilledBuckedIndex];
+    // }
 }
