@@ -7,9 +7,9 @@ public class ExtendibleHash {
 
     static String cwd = System.getProperty("user.dir");
     static Map<String, Integer> bucketAddressTable = new HashMap<String, Integer>() {};
-    static final int numberOfRecords = 30;
-    static final int bucketSize = 200;
     static final int hashLength = 16;
+    static final int numberOfRecords = 30;
+    // static final int bucketSize = 2;
     
     public static void main(String args[]) {
         
@@ -18,7 +18,8 @@ public class ExtendibleHash {
             File file = new File(cwd+"/dataset.txt");
             Scanner fileReader = new Scanner(file);
             String outpuString = "";
-
+            Scanner scn = new Scanner(System.in);
+            int bucketSize = scn.nextInt();
             Bucket.setBucketSize(bucketSize);
             Utility.setHashLength(hashLength);
             int globalDepth = 0;
