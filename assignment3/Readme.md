@@ -1,1 +1,1 @@
-## Latex assignment to understand latex and how to write professional research paper.
+## Latex assignment to understand learn latex programming and how to write research paper.
