@@ -1,6 +1,7 @@
 # How to run the code?
 
 1. Run ExtendibleHash.java file. It asks for Bucket_Size.
+2. Put data in dataset.txt file in csv format.
 
 # Files information
 

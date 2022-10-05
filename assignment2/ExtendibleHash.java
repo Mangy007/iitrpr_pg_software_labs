@@ -8,14 +8,14 @@ public class ExtendibleHash {
     static String cwd = System.getProperty("user.dir");
     static Map<String, Integer> bucketAddressTable = new HashMap<String, Integer>() {};
     static final int hashLength = 16;
-    static final int numberOfRecords = 30;
+    // static final int numberOfRecords = 30;
     // static final int bucketSize = 2;
     
     public static void main(String args[]) {
         
         try {
-            Utility.generateData(numberOfRecords);
-            File file = new File(cwd+"/dataset.txt");
+            // Utility.generateData(numberOfRecords);   // used to generate data based on numberOfRecords || comment this part of code if data is given by yourself
+            File file = new File(cwd+"/dataset.txt");   // data is expected in csv format in dataset.txt file in the same working directory
             Scanner fileReader = new Scanner(file);
             String outpuString = "";
             Scanner scn = new Scanner(System.in);
