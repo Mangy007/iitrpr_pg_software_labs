@@ -1,0 +1,35 @@
+A pseudocode of the algorithm is presented in Algorithm \ref{spatial_rg_algo}. Each call to the algorithm primarily takes the following input: (i) “source node” $u$, (ii) “destination node” $v$ and (iii) remaining budget $\beta$. In the first call to the \textit{Spatial-RG} algorithm, $u$, $v$, and $\beta$ would be set according to the input values given while defining the CPO query. Thereafter, $u$, $v$, and $\beta$ would change during the course of the recursion calls.
+
+\subsection{Time Complexity Analysis of Parallel-Spatial-RG:}
+
+In the worst case, an instance of \textit{Parallel-Spatial-RG} algorithm would iterate over $m$ feasible edges, and for each iteration, it would again iterate for $\beta$ times. Following this, it would have two recursion calls inside the inner loop. Thus, the time complexity for one recursion depth is $O(2m\beta)$. For a maximum recursion depth of $\theta$, the total time complexity of \textit{Parallel-Spatial-RG} would be $O((2m\beta)^\theta )$.
+
+\hbadness=99999 %used to increase border size to get rid of underfull \hbox warning%
+\begin{algorithm}
+\caption{Spatial-RG Algorithm} \label{spatial_rg_algo}
+\textbf{Input: }(a) Input graph $G(V, E)$; (b) source node $u$; (c) destination node $v$; (d) Remaining budget $\beta$; (e) current $level$; (f) maximum recursion depth $\theta$.\newline
+\textbf{Output: }(a) A directed path $P$ between $u$ and $v$\newline
+\begin{algorithmic}[1]
+\State $P \leftarrow \textrm{ minimum cost path between } u \textrm{ and } v$
+\If{$\Phi(P)>\beta$}
+    \State Return Null
+\EndIf
+\If{level$=\theta$} $/^*$Maximum recursion depth reached$^*/$
+    \State Return $P$
+\EndIf
+\State $s_p \leftarrow \Gamma(P)~/^*$stores value of optimizing metric of P $^*/$
+\ForAll{edge $e = (x,y) \in E$ with $\Gamma(e) > 0$ and $e$ inside ellipse(u,v,$\beta)$}
+    \State $b \leftarrow$ Euclidean\_Distance(u,x)
+    \While{$b \leq \beta - \Phi (e) -$Euclidean\_Distance$(y, v)$}
+        \State $P_1 \leftarrow$ Spatial-RG $(u, x, b, level + 1)$
+        \State $P_2 \leftarrow$ Spatial-RG $(y, v, \beta - b - \Phi (e), level + 1)$
+        \State $P_\mathrm{new} \leftarrow P_1 \cup e \cup P_2$
+        \If{$(P_1 \cap P_2) = null$ $\&$ $\Gamma(P_\mathrm{new}) > s_p$}
+            \State $P \leftarrow P_\mathrm{new}$ and $s_p \leftarrow \Gamma(P_\mathrm{new})$
+        \EndIf
+        \State $b \leftarrow b+1$
+    \EndWhile
+\EndFor
+\State Return $P$
+\end{algorithmic}
+\end{algorithm}

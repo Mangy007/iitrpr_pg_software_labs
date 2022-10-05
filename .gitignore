@@ -7,3 +7,4 @@ assignment1/sorted_run/
 #ignore all files
 assignment2/dataset.txt
 assignment2/output.txt
+*/*.zip

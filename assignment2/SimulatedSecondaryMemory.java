@@ -16,12 +16,6 @@ public class SimulatedSecondaryMemory {
         return simulatedSecondaryMemory[lastFilledBuckedIndex];
     }
 
-    // public static void addBucket(Bucket bucket) {
-        
-    //     bucket.bucketIndexInSecondaryMemory = lastFilledBuckedIndex+1;
-    //     simulatedSecondaryMemory[++lastFilledBuckedIndex] = bucket;
-    // }
-
     public static Bucket getBucket(int index) {
         
         return simulatedSecondaryMemory[index];
@@ -32,8 +26,4 @@ public class SimulatedSecondaryMemory {
         simulatedSecondaryMemory[bucket.bucketIndexInSecondaryMemory] = null;
     }
 
-    // public static Bucket getLastInsertedBucket() {
-        
-    //     return simulatedSecondaryMemory[lastFilledBuckedIndex];
-    // }
 }

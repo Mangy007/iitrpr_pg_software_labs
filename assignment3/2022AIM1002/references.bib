@@ -1,0 +1,97 @@
+@INPROCEEDINGS{V_T_Chakaravarthy,
+  author={Chakaravarthy, Venkatesan T. and Checconi, Fabio and Petrini, Fabrizio and Sabharwal, Yogish},
+  booktitle={2014 IEEE 28th International Parallel and Distributed Processing Symposium}, 
+  title={Scalable Single Source Shortest Path Algorithms for Massively Parallel Systems}, 
+  year={2014},
+  volume={},
+  number={},
+  pages={889-901},
+  doi={10.1109/IPDPS.2014.96}
+ }
+ 
+ @InProceedings{Ugur_Demiryurek,
+author="Demiryurek, Ugur
+and Banaei-Kashani, Farnoush
+and Shahabi, Cyrus
+and Ranganathan, Anand",
+editor="Pfoser, Dieter
+and Tao, Yufei
+and Mouratidis, Kyriakos
+and Nascimento, Mario A.
+and Mokbel, Mohamed
+and Shekhar, Shashi
+and Huang, Yan",
+title="Online Computation of Fastest Path in Time-Dependent Spatial Networks",
+booktitle="Advances in Spatial and Temporal Databases",
+year="2011",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="92--111",
+abstract="The problem of point-to-point fastest path computation in static spatial networks is extensively studied with many precomputation techniques proposed to speed-up the computation. Most of the existing approaches make the simplifying assumption that travel-times of the network edges are constant. However, with real-world spatial networks the edge travel-times are time-dependent, where the arrival-time to an edge determines the actual travel-time on the edge. In this paper, we study the online computation of fastest path in time-dependent spatial networks and present a technique which speeds-up the path computation. We show that our fastest path computation based on a bidirectional time-dependent A* search significantly improves the computation time and storage complexity. With extensive experiments using real data-sets (including a variety of large spatial networks with real traffic data) we demonstrate the efficacy of our proposed techniques for online fastest path computation.",
+isbn="978-3-642-22922-0"
+}
+
+@article{Venkata_M_V_Gunturi,
+  author    = {Kousik Kumar Dutta and
+               Ankita Dewan and
+               Venkata M. V. Gunturi},
+  title     = {A Multi-Threading Algorithm for Constrained Path Optimization Problem
+               on Road Networks},
+  journal   = {CoRR},
+  volume    = {abs/2208.02296},
+  year      = {2022},
+  url       = {https://doi.org/10.48550/arXiv.2208.02296},
+  doi       = {10.48550/arXiv.2208.02296},
+  eprinttype = {arXiv},
+  eprint    = {2208.02296},
+  timestamp = {Tue, 09 Aug 2022 17:15:58 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-2208-02296.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{Alireza_Karduni,
+author = {Karduni, Alireza and Kermanshah, Amirhassan and Derrible, Sybil},
+year = {2016},
+month = {06},
+pages = {160046},
+title = {A protocol to convert spatial polyline data to network formats and applications to world urban road networks},
+volume = {3},
+journal = {Scientific Data},
+doi = {10.1038/sdata.2016.46}
+}
+
+@inproceedings{Yan_Li,
+author = {Li, Yan and Shekhar, Shashi and Wang, Pengyue and Northrop, William},
+title = {Physics-Guided Energy-Efficient Path Selection: A Summary of Results},
+year = {2018},
+isbn = {9781450358897},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3274895.3274933},
+doi = {10.1145/3274895.3274933},
+abstract = {Given a spatial road network, an origin, a destination, and trajectory data of vehicles on the network, the Energy-efficient Path Selection (EPS) problem aims to find the most energy-efficient path (i.e., with least energy consumption) between the origin and the destination. With world energy consumption growing rapidly, estimating and reducing the energy consumption of road transportation is becoming critical. The main challenge of this problem is to adopt energy consumption as the cost metric of paths, which is neglected by the related work in shortest path selection problem whose typical metrics are distance and time. Additionally, negative energy consumption caused by the use of regenerative braking on electrified vehicles prevents classical algorithms like Dijkstra's algorithm from functioning correctly. We introduce a Physics-guided Energy Consumption (PEC) model based on a low-order physics model, which estimates energy consumption as a function of the vehicle parameters (e.g., mass and powertrain system efficiency) and use the estimation in the proposed adaptive dynamic programming algorithm for path selection. Our PEC model treats energy consumption as a unique metric that is determined not only by the path and vehicle's motion along the path, but also on properties of the vehicle itself. Experiments show that the PEC model estimates are more similar to real trajectory data than the estimates represented by the mean or histogram of historical data. Also, the path found by the proposed method is more energy-efficient than both the currently used path and the fastest path found by a commercial routing package. As far as we know, this is the first paper to use a physics-guided method to estimate the vehicle energy consumption and perform path selection.},
+booktitle = {Proceedings of the 26th ACM SIGSPATIAL International Conference on Advances in Geographic Information Systems},
+pages = {99–108},
+numpages = {10},
+keywords = {routing, energy efficiency, shortest path, physics-aware},
+location = {Seattle, Washington},
+series = {SIGSPATIAL '18}
+}
+
+@article{Sibo_Wang,
+author = {Wang, Sibo and Xiao, Xiaokui and Yang, Yin and Lin, Wenqing},
+title = {Effective Indexing for Approximate Constrained Shortest Path Queries on Large Road Networks},
+year = {2016},
+issue_date = {October 2016},
+publisher = {VLDB Endowment},
+volume = {10},
+number = {2},
+issn = {2150-8097},
+url = {https://doi.org/10.14778/3015274.3015277},
+doi = {10.14778/3015274.3015277},
+abstract = {In a constrained shortest path (CSP) query, each edge in the road network is associated with both a length and a cost. Given an origin s, a destination t, and a cost constraint θ, the goal is to find the shortest path from s to t whose total cost does not exceed θ. Because exact CSP is NP-hard, previous work mostly focuses on approximate solutions. Even so, existing methods are still prohibitively expensive for large road networks. Two main reasons are (i) that they fail to utilize the special properties of road networks and (ii) that most of them process queries without indices; the few existing indices consume large amounts of memory and yet have limited effectiveness in reducing query costs.Motivated by this, we propose COLA, the first practical solution for approximate CSP processing on large road networks. COLA exploits the facts that a road network can be effectively partitioned, and that there exists a relatively small set of landmark vertices that commonly appear in CSP results. Accordingly, COLA indexes the vertices lying on partition boundaries, and applies an on-the-fly algorthm called α-Dijk for path computation within a partition, which effectively prunes paths based on landmarks. Extensive experiments demonstrate that on continent-sized road networks, COLA answers an approximate CSP query in sub-second time, whereas existing methods take hours. Interestingly, even without an index, the α-Dijk algorithm in COLA still outperforms previous solutions by more than an order of magnitude.},
+journal = {Proc. VLDB Endow.},
+month = {oct},
+pages = {61–72},
+numpages = {12}
+}

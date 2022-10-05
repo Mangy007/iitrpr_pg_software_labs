@@ -9,12 +9,6 @@ public class Bucket {
 
     int recordIndex = 0;
     
-    // public Bucket(int bucketSize) {
-        
-    //     this.numberOfEmptySpaces = bucketSize;
-    //     this.records = new Record[bucketSize];
-    // }
-    
     public Bucket() {
         
         this.numberOfEmptySpaces = bucketSize;
@@ -26,31 +20,15 @@ public class Bucket {
         bucketSize = size;
     }
 
-    // public void addRecord(String record) {
-        
-    //     if(this.recordIndex >= bucketSize) {
-    //         // System.err.println("Bucket full\n");
-    //         return;
-    //     }
-    //     records[this.recordIndex++] = new Record(record);
-    //     this.numberOfEmptySpaces--;
-    // }
-
     public void addRecord(Record record) {
         
         if(this.numberOfEmptySpaces==0) {
             // bucket full
-            // System.err.println("Bucket full\n");
             return;
         }
         records[this.recordIndex++] = record;
         this.numberOfEmptySpaces--;
     }
-
-    // public int size() {
-        
-    //     return recordIndex;
-    // }
 
     public boolean isBucketFull() {
         
