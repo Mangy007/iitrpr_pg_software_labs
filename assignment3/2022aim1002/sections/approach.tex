@@ -14,10 +14,10 @@ In the worst case, an instance of \textit{Parallel-Spatial-RG} algorithm would i
 \If{$\Phi(P)>\beta$}
     \State Return Null
 \EndIf
-\If{level$=\theta$} $/^*$Maximum recursion depth reached$^*/$
+\If{level $=\theta$} /*Maximum recursion depth reached*/
     \State Return $P$
 \EndIf
-\State $s_p \leftarrow \Gamma(P)~/^*$stores value of optimizing metric of P $^*/$
+\State $s_p \leftarrow \Gamma(P)$ /*stores value of optimizing metric of $P$ */
 \ForAll{edge $e = (x,y) \in E$ with $\Gamma(e) > 0$ and $e$ inside ellipse(u,v,$\beta)$}
     \State $b \leftarrow$ Euclidean\_Distance(u,x)
     \While{$b \leq \beta - \Phi (e) -$Euclidean\_Distance$(y, v)$}
