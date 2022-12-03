@@ -1,0 +1,10 @@
+ls /usr/include/ | wc -l
+
+ls -lhS /usr/include/ | head -5
+
+find /usr/include/ -name "*.h" | wc -l
+
+find /usr/include/ -name "*.h" -size 100b | wc -l
+
+mkdir ~/Desktop/Headerfiles | find /usr/include/ -name "*.h" -exec cp {} ~/Desktop/Headerfiles/ \;
+
